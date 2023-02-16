@@ -1,23 +1,24 @@
-# CIAL dun&bradstreet Technical Assignment
+# Logo and Phones Extractor 
 
 ## Introduction
 
-On this assignment, the application receives various URLs and scrap them, searching
-for phone numbers and its logo. 
+This application receives various URLs and scrap them, searching
+for phone numbers and its logo. Then, it returns a json-like object
+with the website, the logo path and the phones found. 
 
 ## Instalation
 
 To run the application, first run the command
 
 ```
-docker build -t cial_assignment .
+docker build -t logo_and_phones_extractor .
 ```
 
 After that, one can run the program, passing standard
 inputs to the application, via
 
 ```
-cat websites.txt | docker run -i cial_assignment
+cat websites.txt | docker run -i logo_and_phones_extractor
 ```
 
 Another way to run the code locally would be through the steps
