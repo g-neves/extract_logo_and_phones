@@ -1,6 +1,7 @@
 import sys
 import threading
-from tools import Website 
+
+from tools import Website
 
 
 
@@ -14,11 +15,11 @@ def main(url: str) -> None:
 
 
 if __name__ == '__main__':
-    # Read the inputs from the stdin
-    urls = sys.stdin.read().split('\n')
     # With threading, iterate over all urls
-    for url in urls:
-        threading.Thread(target=main, args=(url,)).start()
+    for url in sys.stdin:
+        if url.strip():
+            threading.Thread(target=main, args=(url.strip(),)).start()
+        
 
 
     
