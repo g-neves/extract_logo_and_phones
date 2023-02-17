@@ -41,6 +41,6 @@ The second part, extract the phones, is more tricky. This is because dealing wit
 extremely complicated and lead to errors. Thus, a solution was to use the Google library `phonenumbers`, which
 find phone format matches on a given text (since we specify which country format it needs to look for). 
 
-Another comment is that one can trackle this problem using the `selenium` library. With this strategy, one can
+Another comment is that one can tackle this problem using the `selenium` library. With this strategy, one can
 search for logos and phones which do not appear in the standard request used here. However, the application
 gets significantly slower with this approach, and I chose to follow with the `requests` library.

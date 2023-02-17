@@ -1,6 +1,7 @@
 import string
-from dataclasses import dataclass
 import urllib
+from dataclasses import dataclass
+from typing import List, Tuple
 
 import phonenumbers
 import requests
@@ -15,24 +16,27 @@ class Website:
     def get_html(self) -> str:
         headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.53 Safari/537.36'}
         try:
-            response = requests.get(self.url, headers=headers)
+            self.response = requests.get(self.url, headers=headers)
             # response.raise_for_status()
-            self.html_source = response.text
+            self.html_source = self.response.text
             return True
         except Exception as e:
-            print(e)
+            print(f'Error with url {self.url}: {e}')
             return False
 
-    def clean_phone(self, phone_number):
+    def clean_phone(self, phone_number: str) -> str:
+        # Clean the phone number, letting only
+        # the allowed symbols
         allowed_characters = string.digits
         allowed_characters += '()+'
         return ''.join([char if char in allowed_characters else ' ' for char in phone_number])
 
-    
-    def format_phones(self, phones: list) -> list:
+    def format_phones(self, phones: List[str]) -> List[str]:
+        # Formats to let only the allowed symbols
         return [self.clean_phone(phone_number) for phone_number in phones]
         
     def format_logo(self, logo_url: str) -> str:
+        # Corrects the logo path to get the absolute path.
         url_splitted = urllib.parse.urlsplit(self.url)
         if logo_url[:2] == '//':
             return f'{url_splitted.scheme}:{logo_url}'
@@ -41,21 +45,20 @@ class Website:
         else:
             return logo_url 
 
-    # TODO: Add EU phones
-    def find_phones(self) -> list:
-        # Get matches for USA and BR phone numbers
-        phones_br = phonenumbers.PhoneNumberMatcher(self.html_source, "BR")
-        phones_usa = phonenumbers.PhoneNumberMatcher(self.html_source, "US")
-        phones_br = [phone.raw_string for phone in phones_br]
-        phones_usa = [phone.raw_string for phone in phones_usa]
-        
-        # Join phones
-        phones = phones_br + phones_usa 
+    def find_phones(self) -> List[str]:
+        # Get matches for USA, Brazil and Great Britain phone numbers
+        # This scope can be enlarged, of course. To keep things simple,
+        # right now I chose to keep these 3 countries.
+        # OBS: Germany enhance considerably the number of found phones.
+        phones = []
+        for country in ["BR", "US", "GB"]:
+            phones_match = phonenumbers.PhoneNumberMatcher(self.html_source, country)
+            phones += [phone.raw_string for phone in phones_match]
         
         phones = list(set(phones)) # Exclude duplicates
         self.phones = phones 
 
-    def find_logo(self) -> str:
+    def find_logo(self) -> bool:
         soup = BeautifulSoup(self.html_source, 'html.parser')
         # Get all the images from the request
         imgs = soup.find_all('img')
@@ -71,6 +74,8 @@ class Website:
             # I'm skipping lazy loaded images
             if img.has_attr('data-lazy-src'):    
                 continue
+            # Now, if the tag appears in the class or alt
+            # of a img, I get the image source.
             if img.has_attr('class'):
                 for desc_class in img['class']:
                     if 'logo' in desc_class.lower():
@@ -84,9 +89,14 @@ class Website:
         self.logo = ''
         return False
 
-    def parse_infos(self) -> dict:
+    def parse_infos(self) -> Tuple[dict, int]:
         if not self.get_html():
-            return {}
+            ret_val = {
+                'website': self.url.strip(),
+                'phones': [],
+                'logo': ''
+            }
+            return ret_val, -1
         self.find_logo()
         self.find_phones()
         # Structures the output value
@@ -96,5 +106,5 @@ class Website:
             'logo': self.format_logo(self.logo),
         }
 
-        return ret_val
+        return ret_val, self.response.status_code
 
