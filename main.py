@@ -5,6 +5,7 @@ import threading
 from tools import Website
 
 
+
 def main(url: str) -> None:
     '''
     This function creates a Website class and 
@@ -14,8 +15,6 @@ def main(url: str) -> None:
     print(website_infos)
     if status >= 400:
         print(f'{status} - {http.client.responses[status]}')
-
-
 
 if __name__ == '__main__':
     # With threading, iterate over all urls

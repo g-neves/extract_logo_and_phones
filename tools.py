@@ -13,7 +13,7 @@ from bs4 import BeautifulSoup
 class Website:
     url: str 
     
-    def get_html(self) -> str:
+    def get_html(self) -> bool:
         headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.53 Safari/537.36'}
         try:
             self.response = requests.get(self.url, headers=headers)
