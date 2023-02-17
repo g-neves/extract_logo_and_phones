@@ -33,7 +33,7 @@ that the user creates a virtual environment beforehand.
 
 ## Technical commentaries
 
-First, I dealed with the logo feature. My main idea was to extract, via the 3rd party library `BeautifulSoup`,
+First, I dealt with the logo feature. My main idea was to extract, via the 3rd party library `BeautifulSoup`,
 all the images in the html source code and then look for `logo` tags in them. This strategy ended up being
 effective and was left as the final strategy for obtaining the logos.
 
